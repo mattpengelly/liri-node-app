@@ -70,6 +70,67 @@ switch (command) {
 
   case `spotify-this-song`:
     //spotify account not working.  once fixed need to write code to send artist to spotify API and pull back needed data
+    console.log(keys);
+    console.log(keys.spotify.id);
+
+    // let spotQueryUrl =
+    //   "https://accounts.spotify.com/authorize?client_id=" +
+    //   keys.spotify.id +
+    //   "&response_type=code&redirect_uri=https://github.com/mattpengelly/liri-node-app";
+
+    axios({
+      url: "https://accounts.spotify.com/api/token",
+      method: "post",
+      params: {
+        grant_type: "client_credentials"
+      },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      auth: {
+        username: keys.spotify.id,
+        password: keys.spotify.secret
+      }
+    })
+      .then(function(response) {
+        // console.log(response);
+
+        var spotToken = response.data.access_token;
+
+        console.log("==========================================");
+        console.log("Spotify API Code:  " + spotToken);
+        console.log("==========================================");
+
+        axios({
+          url: "https://api.spotify.com/v1/search",
+          method: "get",
+          params: {
+            q: parameters.join("+"),
+            type: "track"
+          },
+          headers: {
+            Authorization: "Bearer " + spotToken
+            //   "Content-Type": "application/x-www-form-urlencoded"
+          }
+        })
+          .then(function(response) {
+            // console.log("==========================================");
+            console.log("Spotify return object:  " + response);
+            // console.log("==========================================");
+            for (var property in response) {
+              console.log(property + "=" + response[property]);
+            }
+            console.log(response.data.tracks.items[0]);
+            
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
     break;
 
   case `movie-this`:
@@ -80,16 +141,11 @@ switch (command) {
     axios
       .get(queryUrl)
       .then(function(response) {
-          console.log(response);
-          
+        //   console.log(response);
+
         var jsonData = response.data;
         console.log(jsonData);
-        for (i = 0; i < jsonData.length; i++) {
-
-
-
-
-        }
+        for (i = 0; i < jsonData.length; i++) {}
       })
       .catch(function(error) {
         console.log(error);
