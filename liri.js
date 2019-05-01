@@ -15,8 +15,7 @@ let validCommand = false;
 // console.log(command);
 // console.log(parameters);
 
-let liri = function() {
-
+let liri = function () {
   // ERROR HANDLING I ENDED UP DOING AS THE DEFAULT OF THE MAIN SWITCH STATEMENT
   // switch (command) {
   //   case `concert-this`:
@@ -46,42 +45,62 @@ let liri = function() {
 
       axios
         .get(queryUrl)
-        .then(function(response) {
+        .then(function (response) {
           var jsonData = response.data;
           // console.log(jsonData);
           // console.log("==========================================");
           // console.log(parameters.join(" "));
           // console.log("==========================================");
 
+          fs.appendFile(
+            "log.txt", command + " " + parameters.join(" ") + "\n" +
+            "---------------------------------------\n---------------------------------------\n\n",
+            function (error) {
+              if (error) {
+                return console.log(error);
+              }
+            });
+
           for (i = 0; i < jsonData.length; i++) {
             console.log("Venue:     " + jsonData[i].venue.name);
             console.log(
               "Location:  " +
-                jsonData[i].venue.city +
-                ", " +
-                jsonData[i].venue.region +
-                " - " +
-                jsonData[i].venue.country
+              jsonData[i].venue.city +
+              ", " +
+              jsonData[i].venue.region +
+              " - " +
+              jsonData[i].venue.country
             );
             console.log(
               "Date:      " + moment(jsonData[i].datetime).format("MM/DD/YYYY")
             );
             console.log("---------------------------------------");
-            fs.appendFile("log.txt", command + " " + parameters);
-            fs.appendFile("log.txt", "Venue:     " + jsonData[i].venue.name);
-            fs.appendFile("log.txt", "Location:  " +
-            jsonData[i].venue.city +
-            ", " +
-            jsonData[i].venue.region +
-            " - " +
-            jsonData[i].venue.country);
-            fs.appendFile("log.txt", "Date:      " + moment(jsonData[i].datetime).format("MM/DD/YYYY"));
-            fs.appendFile("log.txt", "---------------------------------------");
-          }
-          fs.appendFile("log.txt", "****************************************");
-          fs.appendFile("log.txt", "****************************************");
+            fs.appendFile(
+              "log.txt",
+              "Venue:     " + jsonData[i].venue.name + "\n" +
+              "Location:  " +
+              jsonData[i].venue.city +
+              ", " +
+              jsonData[i].venue.region +
+              " - " +
+              jsonData[i].venue.country +
+              "\nDate:      " + moment(jsonData[i].datetime).format("MM/DD/YYYY") +
+              "\n---------------------------------------\n",
+              function (error) {
+                if (error) {
+                  return console.log(error);
+                }
+              });
+          };
+          fs.appendFile("log.txt",
+            "\n\n********************************************************\n********************************************************\n\n",
+            function (error) {
+              if (error) {
+                return console.log(error);
+              }
+            });
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
         });
       break;
@@ -91,30 +110,69 @@ let liri = function() {
       // console.log(keys.spotify.id);
       // console.log("parameters = " + parameters);
       if (parameters.length === 0) {
-        parameters = ["The", "Sign"];
+        parameters = ["The", "Sign", "Ace"];
       }
 
-      spotify.search({ type: "track", query: parameters }, function(err, data) {
+      spotify.search({ type: "track", query: parameters }, function (err, data) {
         if (err) {
           return console.log("Error occurred: " + err);
         }
 
-        // console.log(data);
+        fs.appendFile(
+          "log.txt", command + " " + parameters.join(" ") + "\n\n" +
+          "---------------------------------------\n---------------------------------------\n\n",
+          function (error) {
+            if (error) {
+              return console.log(error);
+            }
+          });
+
+        // console.log(data.tracks);
         let artists = [];
         for (i = 0; i < data.tracks.items[0].artists.length; i++) {
           artists.push(data.tracks.items[0].artists[i].name);
-        }
+        };
         console.log("Artist(s):   " + artists.join(", "));
-
         console.log("Song Title:  " + data.tracks.items[0].name);
+
+        fs.appendFile(
+          "log.txt", "Artist(s):   " + artists.join(", ") +
+          "\nSong Title:  " + data.tracks.items[0].name,
+          function (error) {
+            if (error) {
+              return console.log(error);
+            };
+          });
 
         if (!data.tracks.items[0].preview_url) {
           console.log("Preview:     Sorry, no previeww available");
+          fs.appendFile(
+            "log.txt", "\nPreview:     Sorry, no previeww available",
+            function (error) {
+              if (error) {
+                return console.log(error);
+              };
+            });
         } else {
           console.log("Preview:     " + data.tracks.items[0].preview_url);
-        }
+          fs.appendFile(
+            "log.txt", "\nPreview:     " + data.tracks.items[0].preview_url,
+            function (error) {
+              if (error) {
+                return console.log(error);
+              };
+            });
+        };
 
         console.log("Album:       " + data.tracks.items[0].album.name);
+        fs.appendFile(
+          "log.txt", "\nAlbum:       " + data.tracks.items[0].album.name +
+          "\n\n********************************************************\n********************************************************\n\n",
+          function (error) {
+            if (error) {
+              return console.log(error);
+            };
+          });
       });
 
       // METHOD USING SPOTIFY API DIRECTLY WITHOUT NODE PACKAGE
@@ -196,12 +254,12 @@ let liri = function() {
     case `movie-this`:
       queryUrl =
         "http://www.omdbapi.com/?apikey=dd65be43&t=" + parameters.join(" ");
-      console.log(queryUrl);
+      // console.log(queryUrl);
 
       axios
         .get(queryUrl)
-        .then(function(response) {
-          //   console.log(response);
+        .then(function (response) {
+            // console.log(response);
 
           let jsonData = response.data;
           // console.log(jsonData);
@@ -252,8 +310,25 @@ let liri = function() {
           console.log("Language:         " + jsonData.Language);
           console.log("Plot:             " + jsonData.Plot);
           console.log("Actors:           " + jsonData.Actors);
+
+          fs.appendFile(
+            "log.txt",
+            command + " " + parameters.join(" ") + "\n\n" +
+            "---------------------------------------\n---------------------------------------\n\n" +
+            "IMDB Rating:      " + imdbRating +
+            "\nRotten Tomatoes:  " + rottenTomRating +
+            "\nCountry:          " + jsonData.Country +
+            "\nLanguage:         " + jsonData.Language +
+            "\nPlot:             " + jsonData.Plot +
+            "\nActors:           " + jsonData.Actors +
+            "\n\n********************************************************\n********************************************************\n\n",
+            function (error) {
+              if (error) {
+                return console.log(error);
+              };
+            });
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
         });
       break;
@@ -261,7 +336,7 @@ let liri = function() {
     case `do-what-it-says`:
       // console.log("Do what it says was called");
 
-      fs.readFile("random.txt", "utf8", function(error, data) {
+      fs.readFile("random.txt", "utf8", function (error, data) {
         if (error) {
           return console.log(error);
         }
@@ -286,10 +361,10 @@ let liri = function() {
     default:
       console.log(
         "'" +
-          command +
-          "' is not a valid command.  Valid commands are 'concert-this', 'spotify-this-song', 'movie-this', and 'do-what-it-says'."
+        command +
+        "' is not a valid command.  Valid commands are 'concert-this', 'spotify-this-song', 'movie-this', and 'do-what-it-says'."
       );
-  };
+  }
 };
 
 liri();
