@@ -265,7 +265,7 @@ let liri = function () {
           // console.log(jsonData);
 
           let ratings = jsonData.Ratings;
-          console.log(ratings);
+          // console.log(ratings);
 
           let ratingSourceArr = [];
 
@@ -350,7 +350,7 @@ let liri = function () {
           console.log("Nope, no infinite loops allowed!");
         } else {
           command = dataArr[0];
-          parameters = dataArr[1];
+          parameters = dataArr[1].split(" ");
           // console.log(parameters);
 
           liri();
